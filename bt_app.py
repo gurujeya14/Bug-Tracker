@@ -16,31 +16,20 @@ def reLogin(err):
 	
 @app.route('/login_check',methods = ['POST', 'GET'])
 def login_check():
-	flag = 0
-	err = ''
 	if request.method == 'POST':
 		con = sqlite3.connect('bugTracker_sample.db')
-		try:
-			uname = request.form['id']
-			paswd = request.form['paswd']
-			
-			cur = conn.cursor()
-			cur.execute('SELECT uname,paswd FROM users WHERE id = ?',(uname) )
-			for row in cur:
-				if(row[1] == str(paswd)):
-					flag = 1
-					return render_template('bt_mainPage.html',user = row[0])
-					break
-				else:
-					err = "* Enter Valid Password"
-					break
-		except:
-			err = "* User not yet registered!!"
-		
-		finally:
-			if(flag != 1):
-				return render_template('bt_reLogin.html',err = err)
-
+		id = request.form['id']
+		paswd = request.form['paswd']
+         
+#         with sql.connect("database") as con:
+		cur = con.cursor()
+		cur.execute("SELECT * FROM users WHERE id = ? and paswd = ?",(id,paswd) )
+		row = cur.fetchone()
+		if(row):
+			return render_template('bt_mainPage.html',user = str(row[1]))
+		else:
+			err = "Username or Password is Incorrect"
+			return render_template('bt_reLogin.html',err = err)
 	
 @app.route('/register')
 def register():
@@ -98,8 +87,7 @@ def register_check():
 #         with sql.connect("database") as con:
 			if(flag != 1):
 				cur = con.cursor()
-				cur.execute("INSERT INTO users (id,uname,paswd) VALUES (?,?,?)",(id,uname,paswd) )
-            
+				cur.execute("INSERT INTO users (id,uname,paswd) VALUES (?,?,?)",(id,uname,paswd) )            
 				con.commit()
 				msg = "Record successfully added"
 			else:
