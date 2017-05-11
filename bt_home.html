@@ -14,5 +14,8 @@
 			<input type = "submit" value = "Ready to hunt - Login" />
 		</form>
 		</center>
+		{%for msg in get_flashed_messages()%}
+		<center>{{msg}}</center>
+		{%endfor%}
 	</body>
 </html>
