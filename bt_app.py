@@ -69,7 +69,7 @@ def register_check():
 			paswd = request.form['paswd']
 			cpaswd = request.form['cPaswd']
 			
-			if(id == ''):
+			if(id == '' or id > 5 or id.isdigit() == False):
 				flag = 1
 				iderr = "* Fill in the Unique ID field" 
 				
@@ -108,6 +108,7 @@ def register_check():
 				con.commit()
 				msg = "Record successfully added"
 			else:
+				flag = 2
 				return render_template("bt_reRegister.html",iderr = iderr, nmerr = nmerr, perr = perr)
 				
 		except:
@@ -116,8 +117,9 @@ def register_check():
 			msg = "Error in Registration"
       
 		finally:
-			return render_template("bt_register_result.html",msg = msg,flag = flag)
-			con.close()
+			if(flag != 2):
+				return render_template("bt_register_result.html",msg = msg,flag = flag)
+				con.close()
 			
 @app.route('/mainPage/<user>')
 def mainPage(user):
@@ -146,19 +148,19 @@ def submit_check(user):
 			status = request.form['status']
 			#print pdtNm, pdtVer, bug, des, str(severe), str(status)
 			
-			if pdtNm == '':
+			if pdtNm == '' or len(pdtNm)>50:
 				flag = 1
 				nmerr = "** Fill in a valid product-name"
-			print pdtNm, pdtVer, bug, des, str(severe), str(status), flag
+			#print pdtNm, pdtVer, bug, des, str(severe), str(status), flag
 			p = re.compile('[0-9][.][0-9]')
 			m = p.match(pdtVer)
 			if(m.group() != pdtVer):
 				flag = 1
 				verr = "** Fill in a valid product-version"
-			print pdtNm, pdtVer, bug, des, str(severe), str(status), flag
+			#print pdtNm, pdtVer, bug, des, str(severe), str(status), flag
 			p = re.compile('([\w]+)')
 			m = p.match(bug)
-			if(m.group() != bug):
+			if(m.group() != bug or len(bug)>50):
 				flag = 1
 				berr = "** Fill in a valid unique bug-name"
 			print pdtNm, pdtVer, bug, des, str(severe), str(status), flag
