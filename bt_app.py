@@ -1,7 +1,7 @@
-from flask import Flask, render_template, request, redirect, url_for, make_response
+from flask import Flask, render_template, request, redirect, url_for, make_response, session,flash
 import sqlite3, re, datetime
 app = Flask(__name__)
-
+app.secret_key = 'F12Zr47j\3yX R~X@H!jmM]Lwf/,?12'
 #global value
 date = ""
 
@@ -13,6 +13,8 @@ def home():
 def signout():
 	global date
 	date = ""
+	session.pop('log_in', None)
+	flash("You were logged out!!")
 	return redirect(url_for('home'))
 
 @app.route('/login')
@@ -39,10 +41,11 @@ def login_check():
 			global date
 			date = str(now.strftime("%d-%m-%Y"))
 			print date
+			session['log_in'] = str(row[1])
 			return render_template('bt_mainPage.html',user = str(row[1]))
 		else:
-			err = "Username or Password is Incorrect"
-			return render_template('bt_reLogin.html',err = err)
+			flash("Username or Password is Incorrect")
+			return render_template('bt_Login.html')
 	
 @app.route('/register')
 def register():
